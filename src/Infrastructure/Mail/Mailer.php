@@ -25,20 +25,16 @@ class Mailer implements MailerInterface
         $this->mailer->setFrom($_ENV['MAIL_FROM'], $_ENV['MAIL_FROM_NAME']);
     }
 
-    public function sendMail(string $to, string $subject, string $body, array $bccRecipients = []): void
+    public function sendMail(string $to, string $subject, string $body): void
     {
         try {
+            $this->mailer->clearAllRecipients();
             $this->mailer->addAddress($to);
-
-            foreach ($bccRecipients as $bcc) {
-                $this->mailer->addBCC($bcc);
-            }
-
             $this->mailer->Subject = $subject;
             $this->mailer->Body = $body;
             $this->mailer->send();
         } catch (Exception $e) {
-            throw new \Exception("Mail gönderimi başarısız: {$e->getMessage()}");
+            throw new \Exception("Email sending failed: {$e->getMessage()}");
         }
     }
 }

@@ -51,31 +51,50 @@ class BirthdayService
         Logger::debug("Member: {$memberDTO->name}, Days Left: {$daysLeft}, Today: {$today->format('Y-m-d')}, Next Birthday: {$nextBirthday->format('Y-m-d')}");
 
         if ($daysLeft <= $notificationDaysBefore && $daysLeft >= 0) {
-            Logger::info("Sending notification: {$memberDTO->name}, Days left: {$daysLeft}");
+            Logger::info("Sending notification for: {$memberDTO->name}, Days left: {$daysLeft}");
             $this->sendBirthdayNotification($memberDTO, $teamMemberDTOs, $daysLeft);
         }
     }
 
     private function sendBirthdayNotification(TeamMemberDTO $memberDTO, array $teamMemberDTOs, int $daysLeft): void
     {
-        $notifier = new BirthdayNotifier($memberDTO, $teamMemberDTOs);
-        $message = $notifier->createMessage();
-        $recipients = $notifier->getRecipients();
-        $bccRecipients = array_map(fn($r) => $r->email, $recipients);
+        $recipients = $this->getFilteredRecipients($memberDTO, $teamMemberDTOs);
+        $message = $this->prepareMessage($memberDTO, $daysLeft);
 
-        Logger::debug("Mail Recipients: " . implode(", ", $bccRecipients));
-        Logger::debug("Mail Content: {$message}");
+        foreach ($recipients as $recipient) {
+            Logger::debug("Sending mail to: {$recipient}");
+            $this->sendMail($recipient, 'Birthday Reminder', $message);
+        }
+    }
 
+    private function getFilteredRecipients(TeamMemberDTO $memberDTO, array $teamMemberDTOs): array
+    {
+        return array_map(
+            fn($recipient) => $recipient->email,
+            array_filter(
+                $teamMemberDTOs,
+                fn($recipient) => $recipient->email !== $memberDTO->email
+            )
+        );
+    }
+
+    private function prepareMessage(TeamMemberDTO $memberDTO, int $daysLeft): string
+    {
+        $notifier = new BirthdayNotifier($memberDTO, []);
+        return $notifier->createMessage($daysLeft);
+    }
+
+    private function sendMail(string $recipient, string $subject, string $message): void
+    {
         try {
             $this->mailer->sendMail(
-                $_ENV['MAIL_FROM'],
-                'Birthday Reminder',
-                $message,
-                $bccRecipients
+                $recipient,
+                $subject,
+                $message
             );
-            Logger::info("Mail sent successfully: " . implode(", ", $bccRecipients));
+            Logger::info("Mail sent successfully to: {$recipient}");
         } catch (\Exception $e) {
-            Logger::error("Mail sending failed: {$e->getMessage()}");
+            Logger::error("Mail sending failed for {$recipient}: {$e->getMessage()}");
         }
     }
 }
