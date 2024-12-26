@@ -28,7 +28,7 @@ Make sure you have the following installed:
 
 1. **Clone the Repository**
 ```bash
-git clone https://github.com/your-username/cake-alert.git
+git clone https://github.com/ozgurvurgun/cake-alert.git
 ```
 
 2. **Go to Project Directory**
