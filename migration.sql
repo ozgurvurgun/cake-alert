@@ -1,0 +1,6 @@
+CREATE TABLE team_members (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    birthday DATE NOT NULL,
+    email VARCHAR(255) NOT NULL
+);
