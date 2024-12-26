@@ -5,7 +5,7 @@ Cake Alert is a birthday reminder system that notifies team members about upcomi
 ## 🚀 Features
 
 - Sends email notifications with customizable content to all team members.
-- It sends a notification on your birthday and as many days before your birthday as you choose
+- It sends a notification on your birthday and as many days before your birthday as you choose.
 - Uses **PHP** with a clean, layered architecture and some **Domain-Driven Design (DDD)** principles.
 
 ## 🛠️ Stack
@@ -63,12 +63,12 @@ DEFAULT_NOTIFICATION_DAYS=2
 ```bash
 mysql -u root -p birthday_notifier < migration.sql
 ```
-- ***PowerShell:*** PowerShell does not support the < operator. Use type to pipe the content of the SQL file to MySQL:
+- ***PowerShell:*** PowerShell does not support the < operator. Use type to pipe the content of the SQL file to MySQL.
 ```bash
 type migration.sql | mysql -u root -p birthday_notifier
 ```
 
-1. **Start the Application**
+**Start the Application**
 ```bash
 php public/index.php
 ```
